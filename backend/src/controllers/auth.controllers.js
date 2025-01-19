@@ -1,6 +1,7 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/utils.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req?.body;
@@ -80,6 +81,49 @@ export const logout = (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Internal server error at logout catch!",
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req?.body;
+    const userId = req?.user?._id;
+    if (!profilePic) {
+      return res.status(400).json({
+        message: "Profile picture is needed!",
+      });
+    }
+
+    const res = await cloudinary.uploader.upload(profilePic);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: res.secure_url },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(400).json({
+        message: "User not found!",
+      });
+    }
+
+    return res.status(200).json({
+      updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error at update profile!",
+    });
+  }
+};
+
+export const checkAuth = (req, res) => {
+  try {
+    return res.status(200).json(req.user);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error at catch check!",
     });
   }
 };
