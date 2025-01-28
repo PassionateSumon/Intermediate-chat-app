@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullname: "",
+    fullName: "",
     email: "",
     password: "",
   });
@@ -22,13 +22,16 @@ const SignupPage = () => {
     if (!formData.password.trim()) return toast.error("Password is required!");
     if (formData.password.length < 6)
       return toast.error("Password must be at least 6 characters long");
+
+    return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const success = validateForm();
-    if (success) {
-      signup(formData);
+    if (success === true) {
+      console.log("here")
+      signup({data: formData});
     }
   };
 
@@ -67,9 +70,9 @@ const SignupPage = () => {
                   type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="Enter name"
-                  value={formData.fullname}
+                  value={formData.fullName}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullname: e.target.value })
+                    setFormData({ ...formData, fullName: e.target.value })
                   }
                 />
               </div>
